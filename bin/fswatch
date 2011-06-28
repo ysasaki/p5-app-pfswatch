@@ -1,0 +1,37 @@
+#!perl
+
+use strict;
+use warnings;
+use App::fswatch;
+
+App::fswatch->new->run(@ARGV);
+
+# fswatch t/ --exec 'prove -lr __DIR__'
+
+=head1 NAME
+
+fswatch - watch filesystem changes and run command
+
+=head1 SYNOPSIS
+
+fswatch [-h] [-e COMMAND] [path ...]
+
+    --exec | -e COMMAND
+
+    --help | -h 
+        show this message
+
+=head1 AUTHOR
+
+Yoshihiro Sasaki E<lt>ysasaki at cpan.orgE<gt>
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=head1 COPYRIGHT
+
+Copyright 2011 IDAC CO.,LTD. All rights reserved.
+
+=cut
