@@ -1,4 +1,4 @@
-package App::fswatch;
+package App::pfswatch;
 
 use strict;
 use 5.008_001;
@@ -8,7 +8,7 @@ use POSIX qw(:sys_wait_h);
 use Filesys::Notify::Simple;
 use Regexp::Assemble;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 sub new {
     my $class = shift;
@@ -46,8 +46,8 @@ LOOP:
                 my @events = @_;
                 my $exec   = 0;
                 for my $e (@events) {
-                    warn sprintf "[FSWATCH_DEBUG] Path:%s\n", $e->{path}
-                        if $ENV{FSWATCH_DEBUG};
+                    warn sprintf "[PFSWATCH_DEBUG] Path:%s\n", $e->{path}
+                        if $ENV{PFSWATCH_DEBUG};
                     if ( $e->{path} !~ $ignored_pattern ) {
                         $exec++;
                         last;
@@ -79,14 +79,13 @@ sub string_to_cmd {
 }
 
 my @DEFAULT_IGNORED = (
-    '^.*/\..+$',       # dotfile
-    '^.*/.+\.swp$',    # vim swap file
+    '^.*/\..+$',    # dotfile
 );
 
 sub ignored_pattern {
     my $self = shift;
 
-    # TODO read ~/.fswatchrc and set ignored pattern
+    # TODO read ~/.pfswatchrc and set ignored pattern
     my $ra = Regexp::Assemble->new;
     $ra->add($_) for @DEFAULT_IGNORED;
     return $ra->re;
@@ -96,31 +95,33 @@ __END__
 
 =head1 NAME
 
-App::fswatch - watch filesystem changes and run command
+App::pfswatch - a simple utility that detects changes in a filesystem and run given command
 
 =head1 SYNOPSIS
 
-fswatch [-h] [-e COMMAND] [path ...]
+pfswatch [-h] [-e COMMAND] [path ...]
 
     --exec | -e COMMAND
-        exec COMMAND if file or directory is created, changed, removed under given path.
+        run COMMAND when detects changes in a filesystem under given path.
 
     --help | -h 
         show this message.
 
 =head1 EXAMPLE
 
-    $ fswatch t/ lib/ -e 'prove -lr t/'
+    $ pfswatch t/ lib/ -e 'prove -lr t/'
 
 =head1 DESCRIPTION
 
-App::fswatch is utility for watching file or directory change and run command
+App::pfswatch is a utility that detects changes in a filesystem and run given command.
+
+pfswatch does not detect change of dot files.
 
 =head1 DEBUGGING
 
-If you want to know which file is changed, set C<FSWATCH_DEBUG=1>.
+If you want to know which file is changed, set C<PFSWATCH_DEBUG=1>.
 
-    $ FSWATCH_DEBUG=1 fswatch lib -e 'ls -l lib'
+    $ PFSWATCH_DEBUG=1 pfswatch lib -e 'ls -l lib'
 
 =head1 AUTHOR
 

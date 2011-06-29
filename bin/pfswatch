@@ -2,33 +2,33 @@
 
 use strict;
 use warnings;
-use App::fswatch;
+use App::pfswatch;
 
-App::fswatch->new->run(@ARGV);
+App::pfswatch->new->run(@ARGV);
 
 =head1 NAME
 
-fswatch - watch filesystem changes and run command
+pfswatch - a simple utility that detects changes in a filesystem and run given command
 
 =head1 SYNOPSIS
 
 fswatch [-h] [-e COMMAND] [path ...]
 
     --exec | -e COMMAND
-        exec COMMAND if file or directory is created, changed, removed under given path.
+        run COMMAND when detects changes in a filesystem under given path.
 
     --help | -h 
         show this message.
 
 =head1 EXAMPLE
 
-    $ fswatch t/ lib/ -e 'prove -lr t/'
+    $ pfswatch t/ lib/ -e 'prove -lr t/'
 
-=head2 FSWATCH_DEBUG
+=head2 PFSWATCH_DEBUG
 
-If you want to know which file is changed, set C<FSWATCH_DEBUG=1>.
+If you want to know which file is changed, set C<PFSWATCH_DEBUG=1>.
 
-    $ FSWATCH_DEBUG=1 fswatch lib -e 'ls -l lib'
+    $ PFSWATCH_DEBUG=1 pfswatch lib -e 'ls -l lib'
 
 =head1 AUTHOR
 

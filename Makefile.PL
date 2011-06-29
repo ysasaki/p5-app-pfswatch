@@ -1,8 +1,8 @@
 use ExtUtils::MakeMaker;
 WriteMakefile(
-    NAME         => 'App::fswatch',
-    VERSION_FROM => "lib/App/fswatch.pm",
-    ABSTRACT     => 'Watch filesystem changes and run command.',
+    NAME         => 'App::pfswatch',
+    VERSION_FROM => "lib/App/pfswatch.pm",
+    ABSTRACT     => 'A simple utility that detects changes in a filesystem and run given command.',
     PREREQ_PM    => {
         'ExtUtils::MakeMaker'     => 6.31,
         'ExtUtils::Install'       => 1.46,
@@ -10,5 +10,5 @@ WriteMakefile(
         'Regexp::Assemble'        => 0.34,
     },
     LICENSE   => 'perl',
-    EXE_FILES => ['bin/fswatch'],
+    EXE_FILES => ['bin/pfswatch'],
 );

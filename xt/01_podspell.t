@@ -6,5 +6,5 @@ $ENV{LANG} = 'C';
 all_pod_files_spelling_ok('lib');
 __DATA__
 Yoshihiro Sasaki
-ysasaki@idac.co.jp
-App::fswatch
+ysasaki@cpan.org
+App::pfswatch

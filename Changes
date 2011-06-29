@@ -1,5 +1,8 @@
 Revision history for Perl extension App::fswatch
 
+0.03    Wed Jun 29 22:35 2011
+        - rename to pfswatch
+
 0.02    Wed Jun 29 14:39 2011
         - ignore vim's swap files and dotfiles
 
