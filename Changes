@@ -1,5 +1,9 @@
 Revision history for Perl extension App::fswatch
 
+0.04    Thu Jun 30 18:43 2011
+        - --exec option is changed
+        - add -q option
+
 0.03    Wed Jun 29 22:35 2011
         - rename to pfswatch
 

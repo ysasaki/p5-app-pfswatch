@@ -8,7 +8,7 @@ use POSIX qw(:sys_wait_h);
 use Filesys::Notify::Simple;
 use Regexp::Assemble;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 sub new {
     my $class = shift;
@@ -17,20 +17,20 @@ sub new {
 
 sub run {
     my $self = shift;
-    local @ARGV = @_;
-    local $|    = 1;
 
-    my $ret = GetOptions( \my %opts, 'exec|e=s', 'help|h' );
+    my %opts = $self->parse_argv(@_);
 
-    if ( $opts{help} or !$opts{exec} ) {
+    if ( $opts{help} or scalar @{ $opts{exec} } == 0 ) {
         pod2usage();
     }
 
-    my @path = $self->argv_to_path(@ARGV);
-    warn sprintf "Start watching %s\n", join ',', @path;
+    my @path = $self->argv_to_path( @{ $opts{path} } );
+    warn sprintf "Start watching %s\n", join ',', @path unless $opts{quiet};
 
-    my @cmd             = $self->string_to_cmd( $opts{exec} );
+    my @cmd             = @{ $opts{exec} };
     my $ignored_pattern = $self->ignored_pattern;
+
+    local $| = 1;
 
 LOOP:
     if ( my $pid = fork ) {
@@ -54,7 +54,8 @@ LOOP:
                     }
                 }
                 if ($exec) {
-                    warn sprintf "exec %s\n", join ' ', @cmd;
+                    warn sprintf "exec %s\n", join ' ', @cmd
+                        unless $opts{quiet};
                     exec @cmd or die $!;
                 }
             }
@@ -63,7 +64,6 @@ LOOP:
     else {
         die "cannot fork: $!";
     }
-
 }
 
 sub argv_to_path {
@@ -73,9 +73,27 @@ sub argv_to_path {
     return @path;
 }
 
-sub string_to_cmd {
+sub parse_argv {
     my $self = shift;
-    return grep $_, split /\s+/, shift;
+    local @ARGV = @_;
+
+    my $p = Getopt::Long::Parser->new( config => ['pass_through'] );
+    $p->getoptions( \my %opts, 'quiet', 'help|h' );
+
+    my ( @path, @cmd );
+    my $exec_re = qr/^-(e|-exec)$/i;
+    while ( my $arg = shift @ARGV ) {
+        if ( $arg =~ $exec_re ) {
+            @cmd = splice @ARGV, 0, scalar @ARGV;
+        }
+        else {
+            push @path, $arg;
+        }
+    }
+    $opts{path} = \@path;
+    $opts{exec} = \@cmd;
+
+    return %opts;
 }
 
 my @DEFAULT_IGNORED = (
@@ -99,17 +117,20 @@ App::pfswatch - a simple utility that detects changes in a filesystem and run gi
 
 =head1 SYNOPSIS
 
-pfswatch [-h] [-e COMMAND] [path ...]
+pfswatch [-h] [path ...] -e COMMAND
 
     --exec | -e COMMAND
         run COMMAND when detects changes in a filesystem under given path.
+
+    --quiet | -q
+        run in quiet mode. only print COMMAND output.
 
     --help | -h 
         show this message.
 
 =head1 EXAMPLE
 
-    $ pfswatch t/ lib/ -e 'prove -lr t/'
+    $ pfswatch t/ lib/ -e prove -lr t/
 
 =head1 DESCRIPTION
 
@@ -121,7 +142,7 @@ pfswatch does not detect change of dot files.
 
 If you want to know which file is changed, set C<PFSWATCH_DEBUG=1>.
 
-    $ PFSWATCH_DEBUG=1 pfswatch lib -e 'ls -l lib'
+    $ PFSWATCH_DEBUG=1 pfswatch lib -e ls -l lib
 
 =head1 AUTHOR
 
