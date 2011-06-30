@@ -24,9 +24,7 @@ subtest '--exec' => sub {
 };
 
 subtest 'others' => sub {
-    my %opts = $watcher->parse_argv(qw(-h -q -qq));
-    ok $opts{help}, 'help';
-    ok $opts{q},    'q';
-    ok $opts{qq},   'qq';
+    my %opts = $watcher->parse_argv(qw(-h -q));
+    ok $opts{help},  'help';
+    ok $opts{quiet}, 'quiet';
 };
-
