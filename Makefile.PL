@@ -19,5 +19,4 @@ WriteMakefile(
     },
     LICENSE   => 'perl',
     EXE_FILES => ['bin/pfswatch'],
-    test      => { TESTS => 't/*.t xt/*.t' },
 );
