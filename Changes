@@ -1,5 +1,9 @@
 Revision history for Perl extension App::fswatch
 
+0.05    Sat Jul  2 12:12 2011
+        - remove xt
+        - set bugtracer
+
 0.04    Thu Jun 30 18:43 2011
         - --exec option is changed
         - add -q option
