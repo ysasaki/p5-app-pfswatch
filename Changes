@@ -1,5 +1,8 @@
 Revision history for Perl extension App::fswatch
 
+0.06    Sun Jul  3 11:01 2011
+        - fix build_requires in Makefile.PL
+
 0.05    Sat Jul  2 12:12 2011
         - remove xt
         - set bugtracer

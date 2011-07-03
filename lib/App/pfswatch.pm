@@ -8,7 +8,7 @@ use POSIX qw(:sys_wait_h);
 use Filesys::Notify::Simple;
 use Regexp::Assemble;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 sub new {
     my $class = shift;

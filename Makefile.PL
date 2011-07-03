@@ -2,11 +2,15 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME         => 'App::pfswatch',
     VERSION_FROM => "lib/App/pfswatch.pm",
+    AUTHOR       => 'Yoshihiro Sasaki <ysasaki at cpan.org>',
     ABSTRACT =>
         'A simple utility that detects changes in a filesystem and run given command.',
+    BUILD_REQUIRES => {
+        'ExtUtils::MakeMaker' => 6.31,
+        'ExtUtils::Install'   => 1.46,
+        'Test::Simple'        => 0.96,
+    },
     PREREQ_PM => {
-        'ExtUtils::MakeMaker'     => 6.31,
-        'ExtUtils::Install'       => 1.46,
         'Filesys::Notify::Simple' => 0.07,
         'Regexp::Assemble'        => 0.34,
     },
