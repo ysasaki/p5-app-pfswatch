@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use App::pfswatch;
 
-App::pfswatch->new->run(@ARGV);
+App::pfswatch->new_with_options(@ARGV)->run;
 
 =head1 NAME
 

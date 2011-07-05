@@ -3,7 +3,7 @@ use warnings;
 use Test::More tests => 4;
 use App::pfswatch;
 
-my $watcher = App::pfswatch->new;
+my $watcher = 'App::pfswatch';
 
 subtest 'path' => sub {
     my %opts = $watcher->parse_argv(qw(lib t));
@@ -24,7 +24,8 @@ subtest '--exec' => sub {
 };
 
 subtest 'others' => sub {
-    my %opts = $watcher->parse_argv(qw(-h -q));
+    my %opts = $watcher->parse_argv(qw(-h -q -p));
     ok $opts{help},  'help';
     ok $opts{quiet}, 'quiet';
+    ok $opts{pipe},  'pipe';
 };

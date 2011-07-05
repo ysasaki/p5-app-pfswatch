@@ -7,27 +7,60 @@ use Getopt::Long;
 use POSIX qw(:sys_wait_h);
 use Filesys::Notify::Simple;
 use Regexp::Assemble;
+use Carp ();
 
 our $VERSION = '0.06';
 
 sub new {
     my $class = shift;
-    bless {}, $class;
+    my %opts  = @_;
+    my %args  = (
+        path => _is_arrayref( $opts{path} )
+        ? [ sort @{ $opts{path} } ]
+        : ['.'],
+        exec  => _is_arrayref( $opts{exec} ) ? $opts{exec} : undef,
+        quiet => delete $opts{quiet}         ? 1           : 0,
+        pipe  => delete $opts{pipe}          ? 1           : 0,
+    );
+
+    unless ( $args{exec} ) {
+        my $type
+            = ref $opts{exec}     ? ref $opts{exec}
+            : defined $opts{exec} ? $opts{exec}
+            :                       'undef';
+        Carp::croak(
+            "Mandatory parameter 'exec' does not pass the type constraint because: Validation failed for Array with value $type"
+        );
+    }
+
+    bless \%args, $class;
+}
+
+sub new_with_options {
+    my $klass = shift;
+    my $class = ref $klass || $klass;
+
+    my %opts = $class->parse_argv(@_);
+    if ( $opts{help} or scalar @{ $opts{exec} } == 0 ) {
+        pod2usage();
+    }
+
+    $class->new(
+        path  => $opts{path},
+        exec  => $opts{exec},
+        quiet => $opts{quiet} ? 1 : 0,
+        pipe  => $opts{pipe} ? 1 : 0,
+    );
 }
 
 sub run {
     my $self = shift;
 
-    my %opts = $self->parse_argv(@_);
+    my @path = @{ $self->{path} };
+    warn sprintf "Start watching %s\n", join ',', @path
+        unless $self->{quiet};
 
-    if ( $opts{help} or scalar @{ $opts{exec} } == 0 ) {
-        pod2usage();
-    }
-
-    my @path = $self->argv_to_path( @{ $opts{path} } );
-    warn sprintf "Start watching %s\n", join ',', @path unless $opts{quiet};
-
-    my @cmd             = @{ $opts{exec} };
+    my @cmd             = @{ $self->{exec} };
     my $ignored_pattern = $self->ignored_pattern;
 
     local $| = 1;
@@ -55,7 +88,7 @@ LOOP:
                 }
                 if ($exec) {
                     warn sprintf "exec %s\n", join ' ', @cmd
-                        unless $opts{quiet};
+                        unless $self->{quiet};
                     exec @cmd or die $!;
                 }
             }
@@ -66,19 +99,12 @@ LOOP:
     }
 }
 
-sub argv_to_path {
-    my $self = shift;
-    my @path = sort @_;
-    @path = '.' unless scalar @path > 0;
-    return @path;
-}
-
 sub parse_argv {
-    my $self = shift;
+    my $class = shift;
     local @ARGV = @_;
 
     my $p = Getopt::Long::Parser->new( config => ['pass_through'] );
-    $p->getoptions( \my %opts, 'quiet', 'help|h' );
+    $p->getoptions( \my %opts, 'pipe', 'quiet', 'help|h' );
 
     my ( @path, @cmd );
     my $exec_re = qr/^-(e|-exec)$/i;
@@ -108,6 +134,12 @@ sub ignored_pattern {
     $ra->add($_) for @DEFAULT_IGNORED;
     return $ra->re;
 }
+
+sub _is_arrayref {
+    my $v = shift;
+    $v && ref $v eq 'ARRAY' && scalar @$v > 0 ? 1 : 0;
+}
+
 1;
 __END__
 
