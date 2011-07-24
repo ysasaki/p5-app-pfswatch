@@ -9,7 +9,7 @@ use Filesys::Notify::Simple;
 use Regexp::Assemble;
 use Carp ();
 
-our $VERSION = '0.06';
+our $VERSION = '0.06_01';
 
 sub new {
     my $class = shift;
@@ -56,14 +56,14 @@ sub new_with_options {
 sub run {
     my $self = shift;
 
+    local $| = 1;
+
     my @path = @{ $self->{path} };
     warn sprintf "Start watching %s\n", join ',', @path
         unless $self->{quiet};
 
-    my @cmd             = @{ $self->{exec} };
-    my $ignored_pattern = $self->ignored_pattern;
-
-    local $| = 1;
+    my $watcher = Filesys::Notify::Simple->new( \@path );
+    my $cb      = $self->_child_callback($watcher);
 
 LOOP:
     if ( my $pid = fork ) {
@@ -73,30 +73,37 @@ LOOP:
     elsif ( $pid == 0 ) {
 
         # child
-        my $watcher = Filesys::Notify::Simple->new( \@path );
-        $watcher->wait(
-            sub {
-                my @events = @_;
-                my $exec   = 0;
-                for my $e (@events) {
-                    warn sprintf "[PFSWATCH_DEBUG] Path:%s\n", $e->{path}
-                        if $ENV{PFSWATCH_DEBUG};
-                    if ( $e->{path} !~ $ignored_pattern ) {
-                        $exec++;
-                        last;
-                    }
-                }
-                if ($exec) {
-                    warn sprintf "exec %s\n", join ' ', @cmd
-                        unless $self->{quiet};
-                    exec @cmd or die $!;
-                }
-            }
-        );
+        $watcher->wait($cb);
     }
     else {
         die "cannot fork: $!";
     }
+}
+
+sub _child_callback {
+    my $self    = shift;
+    my $watcher = shift;
+
+    my @cmd             = @{ $self->{exec} };
+    my $ignored_pattern = $self->ignored_pattern;
+
+    sub {
+        my @events = @_;
+        my $exec   = 0;
+        for my $e (@events) {
+            warn sprintf "[PFSWATCH_DEBUG] Path:%s\n", $e->{path}
+                if $ENV{PFSWATCH_DEBUG};
+            if ( $e->{path} !~ $ignored_pattern ) {
+                $exec++;
+                last;
+            }
+        }
+        if ($exec) {
+            warn sprintf "exec %s\n", join ' ', @cmd
+                unless $self->{quiet};
+            exec @cmd or die $!;
+        }
+    };
 }
 
 sub parse_argv {
