@@ -89,19 +89,28 @@ sub _child_callback {
 
     sub {
         my @events = @_;
-        my $exec   = 0;
+        my @files;
         for my $e (@events) {
             warn sprintf "[PFSWATCH_DEBUG] Path:%s\n", $e->{path}
-                if $ENV{PFSWATCH_DEBUG};
+              if $ENV{PFSWATCH_DEBUG};
             if ( $e->{path} !~ $ignored_pattern ) {
-                $exec++;
+                push @files, $e->{path};
                 last;
             }
         }
-        if ($exec) {
+        if ( scalar @files > 0 ) {
             warn sprintf "exec %s\n", join ' ', @cmd
-                unless $self->{quiet};
-            exec @cmd or die $!;
+              unless $self->{quiet};
+            if ( $self->{pipe} ) {
+                open my $child_stdin, "|-", @cmd
+                  or die $!;
+                print $child_stdin @files;
+                close $child_stdin or die $!;
+                exit 0;
+            }
+            else {
+                exec @cmd or die $!;
+            }
         }
     };
 }
