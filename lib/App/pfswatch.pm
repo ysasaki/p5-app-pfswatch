@@ -9,7 +9,7 @@ use Filesys::Notify::Simple;
 use Regexp::Assemble;
 use Carp ();
 
-our $VERSION = '0.06_01';
+our $VERSION = '0.06_02';
 
 sub new {
     my $class = shift;
@@ -165,32 +165,12 @@ App::pfswatch - a simple utility that detects changes in a filesystem and run gi
 
 =head1 SYNOPSIS
 
-pfswatch [-h] [path ...] -e COMMAND
-
-    --exec | -e COMMAND
-        run COMMAND when detects changes in a filesystem under given path.
-
-    --quiet | -q
-        run in quiet mode. only print COMMAND output.
-
-    --help | -h 
-        show this message.
-
-=head1 EXAMPLE
-
-    $ pfswatch t/ lib/ -e prove -lr t/
+    use App::pfswatch->new;
+    App::pfswatch->new_with_options(@ARGV)->run;
 
 =head1 DESCRIPTION
 
-App::pfswatch is a utility that detects changes in a filesystem and run given command.
-
-pfswatch does not detect change of dot files.
-
-=head1 DEBUGGING
-
-If you want to know which file is changed, set C<PFSWATCH_DEBUG=1>.
-
-    $ PFSWATCH_DEBUG=1 pfswatch lib -e ls -l lib
+Use L<pfswatch> instead of App::pfswatch.
 
 =head1 AUTHOR
 
@@ -198,7 +178,7 @@ Yoshihiro Sasaki E<lt>ysasaki at cpan.orgE<gt>
 
 =head1 SEE ALSO
 
-L<Filesys::Notify::Simple>
+L<Filesys::Notify::Simple>, L<App::watcher>
 
 =head1 LICENSE
 

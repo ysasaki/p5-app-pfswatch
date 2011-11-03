@@ -15,19 +15,23 @@ pfswatch - a simple utility that detects changes in a filesystem and run given c
 pfswatch [-h] [path ...] -e COMMAND
 
     --exec | -e COMMAND
-        run COMMAND when detects changes in a filesystem under given path.
+        Run COMMAND when detects changes in a filesystem under given path.
+
+    --pipe | -p
+        If this option enabled, path names that were changed are passed into STDIN of your command.
 
     --quiet | -q
-        run in quiet mode. only print COMMAND output.
+        Run in quiet mode. only print COMMAND output.
 
     --help | -h 
-        show this message.
+        Show this message.
 
 =head1 EXAMPLE
 
     $ pfswatch t/ lib/ -e prove -lr t/
+    $ pfswatch t/ lib/ --pipe -e xargs prove -l
 
-=head2 PFSWATCH_DEBUG
+=head2 DEBUG
 
 If you want to know which file is changed, set C<PFSWATCH_DEBUG=1>.
 
