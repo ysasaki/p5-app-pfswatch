@@ -12,7 +12,6 @@ WriteMakefile(
     },
     PREREQ_PM => {
         'Filesys::Notify::Simple' => 0.07,
-        'Regexp::Assemble'        => 0.34,
     },
     META_MERGE => {
         resources => {

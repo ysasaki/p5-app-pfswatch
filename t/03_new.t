@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 3;
+use Test::More;
 use App::pfswatch;
 
 subtest 'new' => sub {
@@ -25,3 +25,5 @@ subtest 'execption' => sub {
     eval { App::pfswatch->new };
     like $@, qr/^Mandatory parameter 'exec'/, 'exec is required';
 };
+
+done_testing;

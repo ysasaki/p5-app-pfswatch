@@ -1,5 +1,9 @@
 Revision history for Perl extension App::fswatch
 
+0.07    Sun Nov 13 21:57 2011
+        - add pipe option.
+        - remove Regexp::Assemble.
+
 0.06    Sun Jul  3 11:01 2011
         - fix build_requires in Makefile.PL
 

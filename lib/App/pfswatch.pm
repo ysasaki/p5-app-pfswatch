@@ -6,10 +6,9 @@ use Pod::Usage;
 use Getopt::Long;
 use POSIX qw(:sys_wait_h);
 use Filesys::Notify::Simple;
-use Regexp::Assemble;
 use Carp ();
 
-our $VERSION = '0.06_02';
+our $VERSION = '0.07';
 
 sub new {
     my $class = shift;
@@ -92,7 +91,7 @@ sub _child_callback {
         my @files;
         for my $e (@events) {
             warn sprintf "[PFSWATCH_DEBUG] Path:%s\n", $e->{path}
-              if $ENV{PFSWATCH_DEBUG};
+                if $ENV{PFSWATCH_DEBUG};
             if ( $e->{path} !~ $ignored_pattern ) {
                 push @files, $e->{path};
                 last;
@@ -100,10 +99,10 @@ sub _child_callback {
         }
         if ( scalar @files > 0 ) {
             warn sprintf "exec %s\n", join ' ', @cmd
-              unless $self->{quiet};
+                unless $self->{quiet};
             if ( $self->{pipe} ) {
                 open my $child_stdin, "|-", @cmd
-                  or die $!;
+                    or die $!;
                 print $child_stdin @files;
                 close $child_stdin or die $!;
                 exit 0;
@@ -139,16 +138,11 @@ sub parse_argv {
 }
 
 my @DEFAULT_IGNORED = (
-    '^.*/\..+$',    # dotfile
+    '',    # dotfile
 );
 
 sub ignored_pattern {
-    my $self = shift;
-
-    # TODO read ~/.pfswatchrc and set ignored pattern
-    my $ra = Regexp::Assemble->new;
-    $ra->add($_) for @DEFAULT_IGNORED;
-    return $ra->re;
+    qr{^.*/\..+$};    #dotfile
 }
 
 sub _is_arrayref {

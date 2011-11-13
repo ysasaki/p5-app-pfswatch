@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 4;
+use Test::More;
 use App::pfswatch;
 
 my $watcher = 'App::pfswatch';
@@ -29,3 +29,5 @@ subtest 'others' => sub {
     ok $opts{quiet}, 'quiet';
     ok $opts{pipe},  'pipe';
 };
+
+done_testing;
