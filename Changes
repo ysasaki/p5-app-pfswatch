@@ -3,6 +3,7 @@ Revision history for Perl extension App::fswatch
 {{$NEXT}}
     - Switches to minilla.
     - Uses Filesys::Notify::Simple@0.12
+    - Adds use warnings.
 
 0.07    Sun Nov 13 21:57 2011
         - add pipe option.
